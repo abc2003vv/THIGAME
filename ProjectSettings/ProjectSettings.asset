@@ -4,7 +4,7 @@
 PlayerSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 26
-  productGUID: 514ba333fa1d23d48b066960a68279fd
+  productGUID: e59eca76768395f41aa7e153aa49d49e
   AndroidProfiler: 0
   AndroidFilterTouchesWhenObscured: 0
   AndroidEnableSustainedPerformanceMode: 0
@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: DefaultCompany
-  productName: THIGAME
+  productName: PigAdvanture
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -819,14 +819,14 @@ PlayerSettings:
   apiCompatibilityLevelPerPlatform: {}
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
-  metroPackageName: THIGAME
+  metroPackageName: PigAdvanture
   metroPackageVersion: 
   metroCertificatePath: 
   metroCertificatePassword: 
   metroCertificateSubject: 
   metroCertificateIssuer: 
   metroCertificateNotAfter: 0000000000000000
-  metroApplicationDescription: THIGAME
+  metroApplicationDescription: PigAdvanture
   wsaImages: {}
   metroTileShortName: 
   metroTileShowName: 0
@@ -895,11 +895,11 @@ PlayerSettings:
   apiCompatibilityLevel: 6
   activeInputHandler: 0
   windowsGamepadBackendHint: 0
-  cloudProjectId: d0ccdbeb-3599-43be-86d0-4cdd587e20e1
+  cloudProjectId: 4db22437-5d99-471b-b87a-0db8e9688d73
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: THIGAME
-  organizationId: abc2003vv
+  projectName: PigAdvanture
+  organizationId: unity_10f59075dfd028ccc622
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}

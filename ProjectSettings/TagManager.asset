@@ -3,7 +3,18 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Character
+  - isGround
+  - Trap
+  - Enemy
+  - PlayerTop
+  - Box
+  - Boom
+  - Coin
+  - CheckWin
+  - BloodTonic
+  - toCoins
   layers:
   - Default
   - TransparentFX
@@ -11,11 +22,11 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Ground
+  - Character
+  - Box
+  - Boom
+  - Enemy
   - 
   - 
   - 
@@ -40,4 +51,7 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Character
+    uniqueID: 452349319
     locked: 0
