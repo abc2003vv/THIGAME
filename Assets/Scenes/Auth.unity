@@ -1238,7 +1238,7 @@ VideoPlayer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 412157904}
   m_Enabled: 1
-  m_VideoClip: {fileID: 32900000, guid: 64553a53d84152d4b9b30fac863eb95b, type: 3}
+  m_VideoClip: {fileID: 32900000, guid: 42b62ea43e71dc8448bdc2e5121560d3, type: 3}
   m_TargetCameraAlpha: 1
   m_TargetCamera3DLayout: 0
   m_TargetCamera: {fileID: 0}
@@ -1310,16 +1310,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c964fc44bf3b7448a51809d60923964, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  loginPanel: {fileID: 0}
-  registerPanel: {fileID: 0}
-  MessagePanel: {fileID: 0}
-  username: {fileID: 0}
-  password: {fileID: 0}
-  confirmPassword: {fileID: 0}
-  usernameRegister: {fileID: 0}
-  passwordRegister: {fileID: 0}
-  emailRegister: {fileID: 0}
-  warningText: {fileID: 0}
 --- !u!114 &454114704
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3452,16 +3442,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c964fc44bf3b7448a51809d60923964, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  loginPanel: {fileID: 0}
-  registerPanel: {fileID: 0}
-  MessagePanel: {fileID: 0}
-  username: {fileID: 0}
-  password: {fileID: 0}
-  confirmPassword: {fileID: 0}
-  usernameRegister: {fileID: 0}
-  passwordRegister: {fileID: 0}
-  emailRegister: {fileID: 0}
-  warningText: {fileID: 0}
 --- !u!114 &1764681834
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3690,16 +3670,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c964fc44bf3b7448a51809d60923964, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  loginPanel: {fileID: 454114702}
-  registerPanel: {fileID: 1866610295}
-  MessagePanel: {fileID: 1764681831}
-  username: {fileID: 861142154}
-  password: {fileID: 22265198}
-  confirmPassword: {fileID: 811334612}
-  usernameRegister: {fileID: 1736594341}
-  passwordRegister: {fileID: 97361545}
-  emailRegister: {fileID: 509696109}
-  warningText: {fileID: 2019036018}
 --- !u!4 &1882171891
 Transform:
   m_ObjectHideFlags: 0

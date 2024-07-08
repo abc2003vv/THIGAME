@@ -2,148 +2,167 @@ using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
 using TMPro;
-using UnityEditor;
 
 public class CharacterController : MonoBehaviour
 {
-    // Movement
-    public float speed = 10f;
-    Rigidbody2D rb;
-    // Facing direction
-    bool isFacingR = true;
-    // Jumping
-    public float jumpForce = 20f;
-    private int jumpCount = 0;
-    public int maxJumpCount = 2;
-    // Ground check
-    public Vector2 boxSize;
-    public float castDistance;
-    public LayerMask groundLayer;
-    bool isGrounded;
-    // Animation
-    Animator anim;
-    bool isRunning;
-    //Attack
-    private float attackCooldown = 0.4f;
-    private float attack2Cooldown = 0.3f;
-    private float attackTimer;
-    private float attack2Timer;
+    // Di chuyển
+    public float speed = 10f; // Tốc độ di chuyển
+    Rigidbody2D rb; // RigidBody2D của nhân vật
 
-    // Health
-    public int maxHealth = 100;
-    public int currentHealth;
-    public HealthController healthController;
-    //public HeathBar heathBar;
-    // Death
-    bool isDead = false;
-    //Coin
-    public int coinCount = 0;
-    public TMP_Text coinText;
-    //GameOverUI
-    public GameManager gameManager;
-    //DustPS
-    public ParticleSystem dust;
-    //Dep Lao
-    public GameObject depLao;
-    [SerializeField] GameObject depLaoPoint;
+    // Hướng di chuyển
+    bool isFacingR = true; // Kiểm tra xem nhân vật đang đối diện bên phải hay không
+
+    // Nhảy
+    public float jumpForce = 18f; // Lực nhảy
+    private int jumpCount = 0; // Đếm số lần nhảy
+    public int maxJumpCount = 2; // Số lần nhảy tối đa (bao gồm nhảy đôi)
+    private bool canDoubleJump; // Cờ kiểm tra khả năng nhảy đôi
+
+    // Kiểm tra mặt đất
+    [SerializeField] Transform groundCheck; // Vị trí kiểm tra mặt đất
+    [SerializeField] LayerMask whatIsGround; // Mặt đất được coi là mặt đất
+    [SerializeField] float groundCheckRadius; // Bán kính kiểm tra mặt đất
+    bool isGrounded; // Kiểm tra xem nhân vật có đứng trên mặt đất không
+
+    // Hoạt ảnh
+    Animator anim; // Animator của nhân vật
+    bool isRunning; // Kiểm tra xem nhân vật có đang chạy không
+
+    // Tấn công
+    private float attackCooldown = 0.4f; // Thời gian hồi chiêu của tấn công
+    private float attack2Cooldown = 0.3f; // Thời gian hồi chiêu của tấn công thứ hai
+    private float attackTimer; // Bộ đếm thời gian hồi chiêu của tấn công
+    private float attack2Timer; // Bộ đếm thời gian hồi chiêu của tấn công thứ hai
+
+    // Máu
+    public int maxHealth = 100; // Máu tối đa
+    public int currentHealth; // Máu hiện tại
+    public HealthController healthController; // Điều khiển sức khỏe của nhân vật
+
+    // Chết
+    bool isDead = false; // Kiểm tra xem nhân vật đã chết chưa
+
+    // Đồng xu
+    public int coinCount = 0; // Số lượng đồng xu hiện tại
+    public TMP_Text coinText; // Text hiển thị số lượng đồng xu
+
+    // GameOverUI
+    public GameManager gameManager; // Điều khiển giao diện Game Over
+
+    // Hạt bụi
+    public ParticleSystem dust; // Hạt bụi khi nhân vật di chuyển hoặc nhảy
+
+    // Đạn
+    public GameObject depLao; // Prefab của đạn
+    [SerializeField] GameObject depLaoPoint; // Vị trí bắn đạn
 
     void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
-        anim = GetComponent<Animator>();
-        // Health
+        rb = GetComponent<Rigidbody2D>(); // Lấy RigidBody2D của nhân vật
+        anim = GetComponent<Animator>(); // Lấy Animator của nhân vật
+
+        // Khởi tạo máu
         currentHealth = maxHealth;
         healthController.maxHealth = maxHealth;
 
-        depLao = Resources.Load<GameObject>("Deplao");
-        // Khởi tạo giá trị của goldTextTMP khi bắt đầu
+        depLao = Resources.Load<GameObject>("Deplao"); // Tải prefab đạn từ tài nguyên
+
+        // Khởi tạo giá trị của đồng xu khi bắt đầu
         UpdateCoinUI();
     }
 
     void Update()
     {
-        if (isDead) return;
+        if (isDead) return; // Nếu nhân vật đã chết, không thực hiện các hành động khác
 
-        // Movement
-        float move = Input.GetAxisRaw("Horizontal");
-        rb.velocity = new Vector2(speed * move, rb.velocity.y);
+        // Di chuyển
+        float move = Input.GetAxisRaw("Horizontal"); // Lấy giá trị di chuyển ngang từ Input
+        rb.velocity = new Vector2(speed * move, rb.velocity.y); // Cập nhật vận tốc
 
-        // Ground check
-        //isGrounded = IsGrounded();
+        // Kiểm tra mặt đất
+        isGrounded = IsGrounded(); // Kiểm tra xem nhân vật có đứng trên mặt đất không
 
-        // Jumping
-        if (IsGrounded())
-        {
-            jumpCount = 0; // Reset jump count when touching ground
-            anim.SetBool("isJumping", false); // Reset jumping state
-            anim.SetBool("isFalling", false); // Reset falling state
-        }
+        // Hoạt ảnh chạy
+        isRunning = Mathf.Abs(move) > 0; // Kiểm tra xem có di chuyển hay không
+        anim.SetBool("isRunning", isRunning); // Cập nhật trạng thái chạy
 
-        if (Input.GetKeyDown(KeyCode.X) && jumpCount < maxJumpCount)
-        {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-            jumpCount++;
-            anim.SetBool("isJumping", true);
-            anim.SetBool("isFalling", false); // Ensure falling is false during the jump
-            createDust();
-        }
-
-        // Running animation
-        isRunning = Mathf.Abs(move) > 0;
-        anim.SetBool("isRunning", isRunning);
-
-
-        // Facing direction
+        // Hướng di chuyển
         if (move > 0 && !isFacingR)
         {
-            Flip();
+            Flip(); // Đảo hướng khi di chuyển sang phải
         }
         else if (move < 0 && isFacingR)
         {
-            Flip();
+            Flip(); // Đảo hướng khi di chuyển sang trái
         }
 
-        // Attacking
+        // Nhảy
+        if (isGrounded)
+        {
+            jumpCount = 0; // Đặt lại số lần nhảy khi đứng trên mặt đất
+            canDoubleJump = true; // Cho phép nhảy đôi khi đứng trên mặt đất
+            anim.SetBool("isJumping", false); // Đặt lại trạng thái nhảy
+            anim.SetBool("isFalling", false); // Đặt lại trạng thái rơi
+        }
+
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            if (isGrounded || (canDoubleJump && jumpCount < maxJumpCount))
+            {
+                rb.velocity = new Vector2(rb.velocity.x, jumpForce); // Thực hiện nhảy
+                jumpCount++; // Tăng số lần nhảy
+                anim.SetBool("isJumping", true); // Cập nhật trạng thái nhảy
+                anim.SetBool("isFalling", false); // Đảm bảo trạng thái rơi là false khi nhảy
+                createDust(); // Tạo hạt bụi khi nhảy
+
+                if (!isGrounded)
+                {
+                    canDoubleJump = false; // Ngăn không cho nhảy đôi thêm nếu đã nhảy
+                }
+            }
+        }
+
+        // Tấn công
         if (Input.GetKeyDown(KeyCode.Z) && attackTimer <= 0)
         {
-            Attack();
+            Attack(); // Thực hiện tấn công
         }
 
-        // Attacking 2
+        // Tấn công 2
         if (Input.GetKeyDown(KeyCode.C) && attack2Timer <= 0)
         {
-            Attack2();
-}
+            Attack2(); // Thực hiện tấn công thứ hai
+        }
 
-        // Update falling state
+        // Cập nhật trạng thái rơi
         UpdateFallingState();
 
-        // Update attack timers
+        // Cập nhật bộ đếm thời gian hồi chiêu
         if (attackTimer > 0)
         {
-            attackTimer -= Time.deltaTime;
+            attackTimer -= Time.deltaTime; // Giảm thời gian hồi chiêu của tấn công
         }
 
         if (attack2Timer > 0)
         {
-            attack2Timer -= Time.deltaTime;
+            attack2Timer -= Time.deltaTime; // Giảm thời gian hồi chiêu của tấn công thứ hai
         }
     }
 
     void Flip()
     {
-        isFacingR = !isFacingR;
-        Vector3 theScale = transform.localScale;
-        theScale.x *= -1f;
-        transform.localScale = theScale;
-        createDust();
+        isFacingR = !isFacingR; // Đảo hướng nhân vật
+        Vector3 theScale = transform.localScale; // Lấy kích thước hiện tại của nhân vật
+        theScale.x *= -1f; // Đảo hướng theo trục x
+        transform.localScale = theScale; // Cập nhật kích thước mới
+        createDust(); // Tạo hạt bụi khi đảo hướng
     }
 
     void Attack()
     {
-        anim.SetBool("isAttacking", true);
-        attackTimer = attackCooldown; // Set the cooldown for the attack
-        Invoke("ResetAttack", attackCooldown); // Schedule attack reset
+        anim.SetBool("isAttacking", true); // Cập nhật trạng thái tấn công
+        attackTimer = attackCooldown; // Đặt thời gian hồi chiêu cho tấn công
+        Invoke("ResetAttack", attackCooldown); // Lên lịch reset trạng thái tấn công
 
         // Kiểm tra va chạm với thùng (box)
         Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, 1f);
@@ -154,7 +173,7 @@ public class CharacterController : MonoBehaviour
                 BoxController box = hitCollider.GetComponent<BoxController>();
                 if (box != null)
                 {
-                    box.DestroyBox();
+                    box.DestroyBox(); // Gọi phương thức DestroyBox của thùng
                 }
             }
         }
@@ -162,18 +181,18 @@ public class CharacterController : MonoBehaviour
 
     void ResetAttack()
     {
-        anim.SetBool("isAttacking", false);
+        anim.SetBool("isAttacking", false); // Đặt lại trạng thái tấn công
     }
 
     void Attack2()
     {
-        anim.SetBool("isAttacking2", true);
-        attack2Timer = attack2Cooldown; // Set the cooldown for the second attack
-        Invoke("ResetAttack2", attack2Cooldown); // Schedule attack reset
+        anim.SetBool("isAttacking2", true); // Cập nhật trạng thái tấn công thứ hai
+        attack2Timer = attack2Cooldown; // Đặt thời gian hồi chiêu cho tấn công thứ hai
+        Invoke("ResetAttack2", attack2Cooldown); // Lên lịch reset trạng thái tấn công thứ hai
 
-        GameObject aDepLao = Instantiate(depLao, depLaoPoint.transform.position, Quaternion.identity);
+        GameObject aDepLao = Instantiate(depLao, depLaoPoint.transform.position, Quaternion.identity); // Tạo đạn
 
-        // Đảo hướng của đạn (depLao) nếu nhân vật đang quay mặt trái
+        // Đảo hướng của đạn tùy thuộc vào hướng của nhân vật
         if (!isFacingR)
         {
             aDepLao.GetComponent<Rigidbody2D>().velocity = -transform.right * 10f; // Đạn đi theo hướng trái
@@ -182,104 +201,99 @@ public class CharacterController : MonoBehaviour
         {
             aDepLao.GetComponent<Rigidbody2D>().velocity = transform.right * 10f; // Đạn đi theo hướng phải
         }
-        Destroy(aDepLao, 2f);
+        Destroy(aDepLao, 2f); // Hủy đạn sau 2 giây
     }
 
     void ResetAttack2()
     {
-        anim.SetBool("isAttacking2", false);
+        anim.SetBool("isAttacking2", false); // Đặt lại trạng thái tấn công thứ hai
     }
 
     void UpdateFallingState()
     {
         if (!isGrounded && rb.velocity.y < 0)
         {
-            anim.SetBool("isFalling", true);
+            anim.SetBool("isFalling", true); // Cập nhật trạng thái rơi nếu không còn đứng trên mặt đất và đang rơi xuống
         }
         else if (isGrounded)
         {
-            anim.SetBool("isFalling", false);
+            anim.SetBool("isFalling", false); // Đặt lại trạng thái rơi khi đứng trên mặt đất
         }
     }
 
     public void TriggerHitEffect()
     {
-        // Trigger Hurt in Animator
+        // Kích hoạt hiệu ứng bị đánh trong Animator
         anim.SetTrigger("isHitting");
     }
 
     public void TakeDamage(int damage)
     {
-        if (isDead) return;
+        if (isDead) return; // Nếu nhân vật đã chết, không thực hiện việc nhận sát thương
 
-        // Reduce character's health
+        // Giảm máu của nhân vật
         currentHealth -= damage;
-        //heathBar.setHealth(currentHealth);
-        healthController.TakeDamage(damage);
-
-        //Instantiate(popUpDamagePrefabs, transform.position, Quaternion.identity);
+        healthController.TakeDamage(damage); // Cập nhật sức khỏe
 
         if (currentHealth <= 0 && !isDead)
         {
-            gameManager.gameOver(); //UI GameOver
-            Death();
+            gameManager.gameOver(); // Gọi GameManager để xử lý kết thúc trò chơi
+            Death(); // Xử lý cái chết của nhân vật
         }
     }
 
-    //Tang mau
-void Heal(int amount)
+    // Tăng máu
+    void Heal(int amount)
     {
         currentHealth = Mathf.Min(currentHealth + amount, maxHealth); // Tăng máu và không vượt quá maxHealth
-        //heathBar.setHealth(currentHealth);
-        healthController.Heal(amount);
+        healthController.Heal(amount); // Cập nhật sức khỏe
 
-        // Optionally, add any heal effect or sound here
+        // Có thể thêm hiệu ứng hoặc âm thanh khi hồi máu
     }
 
-    // Death
+    // Xử lý cái chết
     public void Death()
     {
-        isDead = true;
-        anim.SetTrigger("isDeathing");
-        rb.velocity = Vector2.zero; // Stop movement
-        rb.isKinematic = true; // Disable physics interactions
-        StartCoroutine(HandleDeath());
+        isDead = true; // Đánh dấu nhân vật đã chết
+        anim.SetTrigger("isDeathing"); // Kích hoạt hiệu ứng chết trong Animator
+        rb.velocity = Vector2.zero; // Dừng chuyển động
+        rb.isKinematic = true; // Vô hiệu hóa tương tác vật lý
+        StartCoroutine(HandleDeath()); // Bắt đầu coroutine để xử lý cái chết
     }
 
     private IEnumerator HandleDeath()
     {
-        yield return new WaitForSeconds(0.6f); // Adjust the delay to match your death animation duration
-        Destroy(gameObject);
+        yield return new WaitForSeconds(0.6f); // Chờ 0.6 giây (thay đổi tùy thuộc vào độ dài hoạt ảnh chết)
+        Destroy(gameObject); // Hủy đối tượng nhân vật
     }
 
     bool IsGrounded()
     {
-        return Physics2D.BoxCast(transform.position, boxSize, 0, Vector2.down, castDistance, groundLayer);
+        return Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, whatIsGround); // Kiểm tra xem nhân vật có đứng trên mặt đất không
     }
 
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(transform.position - transform.up * castDistance, boxSize);
+        Gizmos.color = Color.red; // Màu sắc của Gizmo
+        Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius); // Vẽ hình cầu để kiểm tra mặt đất
     }
 
-    //xu ly coin
+    // Xử lý đồng xu
     public void collecCoin(int amount)
     {
-        coinCount += amount;
-        UpdateCoinUI();
+        coinCount += amount; // Tăng số lượng đồng xu
+        UpdateCoinUI(); // Cập nhật giao diện đồng xu
     }
 
     public void UpdateCoinUI()
     {
-        coinText.text = coinCount.ToString();
+        coinText.text = coinCount.ToString(); // Cập nhật text hiển thị số lượng đồng xu
     }
 
-
-    //Nhân vật va chạm với Enemy và ngược lại 
+    // Xử lý va chạm với kẻ thù và ngược lại
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if (isDead) return;
+        if (isDead) return; // Nếu nhân vật đã chết, không thực hiện các hành động khác
 
         if (collision.gameObject.CompareTag("Enemy"))
         {
@@ -296,7 +310,7 @@ void Heal(int amount)
                 else // Kiểm tra nếu nhân vật va chạm trên lưng enemy
                 {
                     TakeDamage(5); // Trừ máu khi va chạm với enemy
-                    anim.SetTrigger("isHitting");
+                    anim.SetTrigger("isHitting"); // Kích hoạt hiệu ứng bị đánh
                 }
             }
         }
@@ -305,45 +319,27 @@ void Heal(int amount)
         {
             foreach (ContactPoint2D contactBox in collision.contacts)
             {
-                if (contactBox.point.y < transform.position.y - 1f)
+                if (contactBox.point.y < transform.position.y - 0.9f)
                 {
                     BoxController box = collision.gameObject.GetComponent<BoxController>();
                     if (box != null)
                     {
-                        box.DestroyBox();
-                        // Kiểm tra nếu nhân vật đang tấn công
-                        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Attack1"))
-                        {
-                            box.DestroyBox(); // Gọi phương thức DestroyBox của thùng
-                        }
-}
+                        box.DestroyBox(); // Gọi phương thức DestroyBox của thùng
+                    }
                 }
             }
-
         }
-
-        /*
-        if (collision.gameObject.CompareTag("Boom")) // Kiểm tra va chạm với Boom
-        {
-            TrapBoomController trapBoom = collision.gameObject.GetComponent<TrapBoomController>();
-            if (trapBoom != null) // Kiểm tra xem tham chiếu đã được thiết lập chưa
-            {
-                trapBoom.Boom(); // Gọi phương thức Boom từ script TrapBoomController
-            }
-        }
-        */
     }
 
-    //Dust
+    // Tạo hạt bụi
     void createDust()
     {
-        dust.Play();
+        dust.Play(); // Phát hệ thống hạt bụi
     }
-
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        if (isDead) return;
+        if (isDead) return; // Nếu nhân vật đã chết, không thực hiện các hành động khác
 
         if (collision.CompareTag("BloodTonic"))
         {
@@ -351,7 +347,7 @@ void Heal(int amount)
             if (bloodTonic != null)
             {
                 Heal(bloodTonic.healthAmount); // Tăng máu cho nhân vật
-                bloodTonic.conSume(); // Hủy 
+                bloodTonic.conSume(); // Hủy đối tượng BloodTonic
             }
         }
     }

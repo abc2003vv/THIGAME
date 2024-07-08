@@ -2,31 +2,45 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using TMPro;
 
 
 public class SelectionLevelManager : MonoBehaviour
 {
+    public Button[] levelButtons;
+    public Image Lock;
+    public Image Done;
+    int highestLevel;
 
-    //Choose level
-    public void onClickLevel(int levelNum)
+    void Start()
     {
-        SceneManager.LoadScene("SampleScene");
+        highestLevel = PlayerPrefs.GetInt("highestLevel", 1);
+
+        for (int i = 0; i < levelButtons.Length; i++)
+        {
+            int levelNum = i + 1;
+            if (levelNum > highestLevel)
+            {
+                levelButtons[i].interactable = false; //chua mo khoa
+                levelButtons[i].GetComponent<Image>().sprite = Lock.sprite;
+                levelButtons[i].GetComponentInChildren<TMP_Text>().text = "";
+            }
+            else
+            {
+                //levelButtons[i].interactable = true
+            }
+        }
+    }
+
+    void Update()
+    {
+
     }
 
     public void onClickBackGame()
     {
         Time.timeScale = 0f;
         SceneManager.LoadScene("MainMenu");
-    }
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 }

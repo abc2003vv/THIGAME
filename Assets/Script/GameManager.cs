@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,7 +10,7 @@ public class GameManager : MonoBehaviour
     public GameObject gameWinUI;
     public GameObject gameOverUI;
 
-    public TMP_Text totalCoinText; // Thêm biến này để tham chiếu tới Text hiển thị tổng số coin
+
     public void pauseGame()
     {
         gamePauseUI.SetActive(true);

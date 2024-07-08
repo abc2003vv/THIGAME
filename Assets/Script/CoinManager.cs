@@ -1,12 +1,23 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CoinManager : MonoBehaviour
 {
-    public float speed = 1f;
+    public float speed = 5f;
     public Transform targetTransform;
     public int value = 1;  // Giá trị của vàng này
-
+    //VFXcoin
+    public CoinVFX coinVFX;
+    void Start()
+    {
+        // Thử tìm đối tượng có tag "CoinTarget" nếu chưa gán targetTransform
+        GameObject targetObject = GameObject.FindGameObjectWithTag("CoinTarget");
+        if (targetObject != null)
+        {
+            targetTransform = targetObject.transform;
+        }
+    }
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Character"))
@@ -17,6 +28,13 @@ public class CoinManager : MonoBehaviour
                 characterController.collecCoin(value);
                 characterController.UpdateCoinUI();
             }
+
+            // Kích hoạt VFX
+            if (coinVFX != null)
+            {
+                coinVFX.PlayVFX(transform.position);
+            }
+
             StartCoroutine(MoveToTarget());
         }
     }
@@ -31,4 +49,6 @@ public class CoinManager : MonoBehaviour
 
         Destroy(gameObject);
     }
+
+
 }

@@ -2,9 +2,10 @@ using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
-    public int maxHealth = 1;
+    public int maxHealth = 2;
     private int currentHealth;
     private Animator anim;
+    public EnemyVFX enemyVFX;
 
     private void Start()
     {
@@ -27,6 +28,13 @@ public class EnemyController : MonoBehaviour
     {
         // Trigger Death animation
         anim.SetTrigger("isDeath");
+
+        // Kích hoạt VFX
+        if (enemyVFX != null)
+        {
+            enemyVFX.PlayVFX(transform.position);
+        }
+
         // Disable enemy's interactions
         GetComponent<Collider2D>().enabled = false;
         Destroy(gameObject, 1f);

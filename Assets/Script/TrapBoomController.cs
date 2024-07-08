@@ -8,6 +8,7 @@ public class TrapBoomController : MonoBehaviour
     public LayerMask targetLayer; // LayerMask to filter targets affected by the explosion
     private Animator anim; // Animator component for handling animations
 
+    private bool hasExploded = false;
     private bool isTriggered = false; // Flag to check if the trap is triggered
 
     void Start()
@@ -25,6 +26,17 @@ public class TrapBoomController : MonoBehaviour
             StartCoroutine(BoomDelay()); // Start the explosion delay coroutine
         }
     }
+
+    public void TriggerExplosion()
+    {
+        // Check if the explosion has not been triggered yet
+        if (!hasExploded)
+        {
+            hasExploded = true; // Set the flag to true to prevent further triggers
+            StartCoroutine(BoomDelay()); // Start the explosion delay coroutine
+        }
+    }
+
 
     IEnumerator BoomDelay()
     {
