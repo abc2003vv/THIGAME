@@ -1273,7 +1273,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1677392620}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1899499556}
+        m_TargetAssemblyTypeName: Shop, Assembly-CSharp
+        m_MethodName: NextShop
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1677392620
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1312,6 +1324,52 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1677392617}
   m_CullTransparentMesh: 1
+--- !u!1 &1899499555
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1899499557}
+  - component: {fileID: 1899499556}
+  m_Layer: 0
+  m_Name: NextShop
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1899499556
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1899499555}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4c1a8ba1376e4d478d46f9dfac329ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PanelShop: {fileID: 0}
+  PanelDep: {fileID: 0}
+--- !u!4 &1899499557
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1899499555}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 414.24094, y: 168.63919, z: -1.7278397}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1918055569
 GameObject:
   m_ObjectHideFlags: 0
@@ -1800,3 +1858,4 @@ SceneRoots:
   - {fileID: 1918055573}
   - {fileID: 363149869}
   - {fileID: 748067756}
+  - {fileID: 1899499557}
